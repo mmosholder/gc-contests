@@ -1,0 +1,11 @@
+wp-admin/*
+wp-content/languages
+wp-content/plugins
+wp-content/themes/primer
+wp-content/themes/relia-pro-master
+wp-content/themes/twentyfifteen
+wp-content/themes/twentysixteen
+wp-content/themes/velux
+wp-content/upgrade
+wp-content/uploads
+wp-includes/*
