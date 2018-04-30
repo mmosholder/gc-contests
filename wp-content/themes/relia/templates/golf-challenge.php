@@ -25,9 +25,12 @@ get_header(); ?>
                                 <hr>
 
                                 <?php
-                                    // are there any rows within within our flexible content?                                                                          
-                                    get_template_part('template-parts/golf-test'); 
-                                    
+                                    if (is_user_logged_in()) {
+                                        // are there any rows within within our flexible content?                                                                          
+                                        get_template_part('template-parts/golf-test'); 
+                                    } else {
+                                        echo "<p>Please log in to use this page</p>";
+                                    }                                                                           
                                   ?>
 
                             </div>

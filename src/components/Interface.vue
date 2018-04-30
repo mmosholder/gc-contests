@@ -1,13 +1,19 @@
 <template>
   <div>
 		<section class="gc-tabs-user-entries">
-			<div v-if="userEntries && userEntries.length > 0">
-				<p>Choose an entry to edit or submit for {{ currentContest.name }}</p>
-				<select v-model="selectedEntry">
-					<option v-for="entry in userEntries" v-if="entry.contest_id == currentContest.id" :value="entry" :key="entry.id">{{ entry.name }}</option>
-				</select>
+			<p v-if="userId === 0">You must be logged in to see this page</p>
+			<div v-if="userEntries && userEntries.length === 1">
+				<p v-if="saved"><strong>Entry Saved!</strong></p>
+				<p v-if="currentContest">Please edit or submit for The Grand Slam Challenge - {{ currentContest.name }}</p>
 			</div>
-			<div v-if="userEntries && userEntries.length == 0">Sorry, registration for this contest is closed! Check back next year</div>
+			<div v-if="userId != 0 && (userEntries && userEntries.length > 1)">
+				<p v-if="saved"><strong>Entry Saved!</strong></p>
+				<p v-if="currentContest">Choose an entry to edit or submit for The Grand Slam Challenge - {{ currentContest.name }}</p>
+				<select v-model="selectedEntry" v-if="userEntries.length > 1 && userId != 0">
+					<option v-for="entry in userEntries" v-if="entry.contest_id == currentContest.id" :value="entry" :key="entry.id">{{ entry.name }}</option>
+				</select>				
+			</div>
+			<div v-if="userId != 0 && userEntries && userEntries.length == 0">Sorry, registration for this contest is closed! Check back next year</div>
 		</section>
 		<section class="gc-tabs" v-if="editingEntry">
 			<div class="gc-tabs-content">
@@ -35,7 +41,7 @@
 					<section v-if="activeTier == 'tier1'">
 						<ul class="gc-tabs-golfers">
 							<li v-for="(golfer, i) in golfers.tier1" :key="i">
-								<p @click="addGolfer(golfer, 1, i)" v-if="golfer != editingEntry.tier1 && golfer != editingEntry.tier6">{{ golfer }}</p>
+								<p @click="addGolfer(golfer, 1, i)" v-if="golfer != editingEntry.tier1 && golfer != editingEntry.tier6" v-html="golfer"></p>
 								<p v-else class="-null">{{ golfer }}</p>
 							</li>
 						</ul>
@@ -43,7 +49,7 @@
 					<section v-if="activeTier == 'tier2'">
 						<ul class="gc-tabs-golfers">
 							<li v-for="(golfer, i) in golfers.tier2" :key="i">
-								<p @click="addGolfer(golfer, 2, i)" v-if="golfer != editingEntry.tier2 && golfer != editingEntry.tier6">{{ golfer }}</p>
+								<p @click="addGolfer(golfer, 2, i)" v-if="golfer != editingEntry.tier2 && golfer != editingEntry.tier6" v-html="golfer"></p>
 								<p v-else class="-null">{{ golfer }}</p>
 							</li>
 						</ul>
@@ -51,7 +57,7 @@
 					<section v-if="activeTier == 'tier3'">
 						<ul class="gc-tabs-golfers">
 							<li v-for="(golfer, i) in golfers.tier3" :key="i">
-								<p @click="addGolfer(golfer, 3, i)" v-if="golfer != editingEntry.tier3 && golfer != editingEntry.tier6">{{ golfer }}</p>
+								<p @click="addGolfer(golfer, 3, i)" v-if="golfer != editingEntry.tier3 && golfer != editingEntry.tier6" v-html="golfer"></p>
 								<p v-else class="-null">{{ golfer }}</p>
 							</li>
 						</ul>
@@ -59,7 +65,7 @@
 					<section v-if="activeTier == 'tier4'">
 						<ul class="gc-tabs-golfers">
 							<li v-for="(golfer, i) in golfers.tier4" :key="i">
-								<p @click="addGolfer(golfer, 4, i)" v-if="golfer != editingEntry.tier4 && golfer != editingEntry.tier6">{{ golfer }}</p>
+								<p @click="addGolfer(golfer, 4, i)" v-if="golfer != editingEntry.tier4 && golfer != editingEntry.tier6" v-html="golfer"></p>
 								<p v-else class="-null">{{ golfer }}</p>
 							</li>
 						</ul>
@@ -67,15 +73,15 @@
 					<section v-if="activeTier == 'tier5'">
 						<ul class="gc-tabs-golfers">
 							<li v-for="(golfer, i) in golfers.tier5" :key="i">
-								<p @click="addGolfer(golfer, 5, i)" v-if="golfer != editingEntry.tier5 && golfer != editingEntry.tier6">{{ golfer }}</p>
+								<p @click="addGolfer(golfer, 5, i)" v-if="golfer != editingEntry.tier5 && golfer != editingEntry.tier6" v-html="golfer"></p>
 								<p v-else class="-null">{{ golfer }}</p>
 							</li>
 						</ul>
 					</section>
 					<section v-if="activeTier == 'tier6'">
-						<ul class="gc-tabs-golfers" v-for="(golfer, i) in filteredTier6" :key="i">
-							<li>
-								<p @click="addGolfer(golfer, 6, i)" v-if="golfer != editingEntry.tier6 && golfer != editingEntry.tier6">{{ golfer }}</p>
+						<ul class="gc-tabs-golfers">
+							<li v-for="(golfer, i) in filteredTier6" :key="i">
+								<p @click="addGolfer(golfer, 6, i)" v-if="golfer != editingEntry.tier6 && golfer != editingEntry.tier6" v-html="golfer"></p>
 								<p v-else class="-null">{{ golfer }}</p>
 							</li>
 						</ul>
@@ -130,7 +136,6 @@ import moment from '../vendor/moment.min.js';
 
 export default {
   name: "Golfers",
-  props: ['tier'],
 
   data() {
   	return {
@@ -142,7 +147,7 @@ export default {
 			selectedEntry: null,
 			entryName: null,
 			userId: theUser.userid,
-			// userId: 1,
+			user: theUser,
 			userEntries: null,
 			editingEntry: null,
 			updatedTier1: [],
@@ -151,50 +156,24 @@ export default {
 			updatedTier4: [],
 			updatedTier5: [],
 			updatedTier6: [],
-			contests: [
-				{
-					name: 'The Players Championship',
-					starts: moment('2018/05/09 07:00').utc().format(),
-					id: 2
-				},
-				{
-					name: 'The US Open',
-					starts: moment('2018/06/14').utc().format(),
-					id: 3
-				},
-				{
-					name: 'The Open',
-					starts: '2018/07/19',
-					id: 4
-				},
-				{
-					name: 'The PGA Championship',
-					starts: '2018/08/09',
-					id: 5
-				}
-			],
-			currentContest: {
-				name: 'The Players Championship',
-				starts: '2018/05/09',
-				id: 2
-			}
+			contests: [],
+			currentContest: null,
+			now: moment().utc().format(),
+			saved: false
   	}
 	},
 	
-	created() {
-		this.getUserEntries();
-		this.getGolfersTest();
-		console.log(this.editingEntry)
+	mounted() {
+		if (this.userId != 0) {
+			this.getContests();
+			this.getGolfersTest();
+		}
 	},
 
 	computed: {
 		filteredTier6() {
 			let tier6 = _.concat(this.golfers.tier1, this.golfers.tier2, this.golfers.tier3, this.golfers.tier4, this.golfers.tier5);
 			return _.pull(tier6, this.editingEntry.tier1, this.editingEntry.tier2, this.editingEntry.tier3, this.editingEntry.tier4, this.editingEntry.tier5);
-		},
-
-		filteredContest() {
-			// let upcomingContest = _.pull(contests, )
 		}
 	},
 
@@ -202,13 +181,45 @@ export default {
 		selectedEntry() {
 			this.editingEntry = {};
 			this.editingEntry = JSON.parse(JSON.stringify(this.selectedEntry));
+		},
+
+		userEntries() {
+			if (this.userEntries.length == 1) {
+				this.editingEntry = {};
+				this.editingEntry = JSON.parse(JSON.stringify(this.userEntries[0]))
+			}
 		}
 	},
 
   methods: {
+		getContests() {
+			axios.get(`http://l95.91e.myftpupload.com/wp-json/contests/v1/all`)
+				.then(r => {
+					this.contests = r.data;
+					this.filterContests();
+				})
+		},
+
+		filterContests() {
+			let upcomingContests = [];
+			this.contests.forEach(contest => {
+				if (this.now < contest.close) {
+					upcomingContests.push(contest);
+				}
+			})
+
+			this.setCurrentContest(upcomingContests);
+		},
+
+		setCurrentContest(upcoming) {
+			let sorted = _.orderBy(upcoming, 'close', 'asc');
+			this.currentContest = sorted[0];
+			this.getUserEntries();
+		},
+
 		getUserEntries() {
 			// if (this.userId.length) {
-				axios.get(`http://l95.91e.myftpupload.com/wp-json/contests/v1/users/${this.userId}`)
+				axios.get(`http://l95.91e.myftpupload.com/wp-json/contests/v1/contest/${this.currentContest.id}/users/${this.userId}`)
 					.then(r => {
 						this.userEntries = r.data;
 					})
@@ -307,11 +318,20 @@ export default {
 				tier6: this.editingEntry.tier6
 			}
 
-			axios.patch(`http://l95.91e.myftpupload.com/wp-json/contests/v1/contest/${this.currentContest.id}/entries/${this.editingEntry.entry_id}`, entryInfo)
+			axios.patch(`http://l95.91e.myftpupload.com/wp-json/contests/v1/entries/${this.editingEntry.entry_id}`, entryInfo)
 				.then(r => {
 					this.editingEntry = null;
 					this.getUserEntries();
+					this.saved = true;
+					this.flashSave();
 				})
+		},
+
+		flashSave() {
+			let t = this;
+			setTimeout(function() {
+				t.saved = false;
+			}, 10000)
 		}
   }
 };

@@ -28,7 +28,7 @@
     flex-direction: column;
     padding: 20px 0;
 
-    @include mq($from: 1025px) {
+    @include mq($from: 1024px) {
       width: 70%;
       padding: 20px 5px 0 5px;
     }
@@ -51,7 +51,7 @@
     border: 1px solid #333;
     
 
-    @include mq($from: 1025px) {
+    @include mq($from: 1024px) {
       flex-wrap: nowrap;
       border-top: 1px solid #d8d8d8;
       border-bottom: 1px solid #d8d8d8;
@@ -90,7 +90,7 @@
         }
       }
 
-      @include mq($from: 1025px) {        
+      @include mq($from: 1024px) {        
         width: calc(100% / 6);
         display: block;
         background-color: transparent;
@@ -124,7 +124,7 @@
 
       &:hover ,
       &.-active {
-        @include mq($to: 1025px) {
+        @include mq($to: 1024px) {
           background-color: #1f8aa5;
 
           span {
@@ -143,6 +143,24 @@
     list-style: none;
     margin: 0;
     padding: 5px;
+    display: flex;
+    flex-wrap: wrap;
+    max-height: 500px;
+    overflow-y: auto;
+
+    li {
+      max-width: 100%;
+      width: 100%;
+      flex-basis: auto;
+
+      @include mq($from: 475px) {
+        max-width: 50%;
+      }
+
+      @include mq($from: 767px) {
+        max-width: 33.33%;
+      }
+    }
 
     p {
       margin: 5px 0;
@@ -166,6 +184,7 @@
     margin-top: 10px;
     display: block;
     cursor: pointer;
+    text-align: center;
 
     @include mq($from: 768px) {
       display: inline-block;
@@ -178,7 +197,7 @@
     flex-basis: auto;
     padding: 20px 0;
 
-    @include mq($from: 1025px) {
+    @include mq($from: 1024px) {
       width: 30%;
       padding: 20px 5px 0 10px;
     }

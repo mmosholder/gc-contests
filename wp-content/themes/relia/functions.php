@@ -144,30 +144,15 @@ add_action('rest_api_init', function () {
 		'callback' => 'handle_get_all'
 	));
 
-	register_rest_route('contests/v1', '/users/(?P<user_id>\d+)', array(
+	register_rest_route('contests/v1', '/contest/(?P<contest_id>\d+)/users/(?P<user_id>\d+)', array(
 		'methods' => 'GET',
 		'callback' => 'handle_get_user_entries'
 	));
 
-	register_rest_route('contests/v1', '/contest/(?P<contest_id>\d+)/entries/(?P<entry_id>\d+)', array(
+	register_rest_route('contests/v1', '/entries/(?P<entry_id>\d+)', array(
 		'methods' => 'PATCH',
-		'callback' => 'update_entry'
-	));
-
-
-	register_rest_route('contests/v1', '/contest/(?P<contest_id>\d+)', array(
-		'methods' => 'POST',
-		'callback' => 'handle_new_entry',
-		'args' => array(
-			'user_id' => array(
-				'required' => true,
-				'type' => 'integer'
-			),
-			'name' => array(
-				'required' => true,
-				'type' => 'string',
-				'description' => 'Name of contest entry'
-			),
+		'callback' => 'update_entry',
+		'args' => array(			
 			'tier1' => array(
 				'required' => true,
 				'type' => 'string'
@@ -208,52 +193,9 @@ function handle_get_all($data)
 function handle_get_user_entries($data)
 {
 	global $wpdb;	
-	$query = "SELECT * FROM `wp_nkmd6smjga_contests` WHERE user_id = $data[user_id]";
+	$query = "SELECT * FROM `wp_nkmd6smjga_entries` WHERE user_id = $data[user_id] AND contest_id = $data[contest_id]";
 	$list = $wpdb->get_results($query);
 	return $list;
-}
-
-function handle_new_entry($data)
-{
-	global $wpdb;
-	$params = $data->get_params();
-	$user_id = $params['user_id'];
-	$contest_id = $data['contest_id'];
-	$name = $params['name'];
-	$tier1 = $params['tier1'];
-	$tier2 = $params['tier2'];
-	$tier3 = $params['tier3'];
-	$tier4 = $params['tier4'];
-	$tier5 = $params['tier5'];
-	$tier6 = $params['tier6'];
-
-	$wpdb -> insert(
-		'wp_nkmd6smjga_contests',
-		array(
-			'contest_id' => $contest_id,
-			'user_id' => $user_id,
-			'name' => $name,
-			'tier1' => $tier1,
-			'tier2' => $tier2,
-			'tier3' => $tier3,
-			'tier4' => $tier4,
-			'tier5' => $tier5,
-			'tier6' => $tier6
-		),
-		array(
-			'%d',
-			'%d',
-			'%s',
-			'%s',
-			'%s',
-			'%s',
-			'%s',
-			'%s',
-			'%s'
-		)
-	);
-	
-	return $wpdb->insert_id;
 }
 
 function update_entry($data)
@@ -269,7 +211,7 @@ function update_entry($data)
 	$tier6 = $params['tier6'];
 
 	$wpdb->update(
-		'wp_nkmd6smjga_contests',
+		'wp_nkmd6smjga_entries',
 		array(
 			'tier1' => $tier1,
 			'tier2' => $tier2,
