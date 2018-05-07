@@ -23,6 +23,7 @@ wp-includes/
 wp-admin/
 wp-content/uploads/*
 wp-content/plugins/*
-wp-content/languages/*
-wp-content/upgrade/*
 wp-content/mu-plugins/*
+wp-content/themes/primer/*
+wp-content/themes/relia-pro-master/*
+wp-content/themes/velux/*
