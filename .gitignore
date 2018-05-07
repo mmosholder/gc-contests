@@ -22,4 +22,4 @@ yarn-error.log*
 wp-includes/
 wp-admin/
 wp-content/
-!wp-content/themes/relia
+!wp-content/themes/*
