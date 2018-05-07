@@ -10,6 +10,7 @@ const { mix } = require('laravel-mix');
  | file for the application as well as bundling up all the JS files.
  |
  */
+
 mix.js('src/main.js', 'public/js/app.js')
     .copy('public/js/app.js', 'wp-content/themes/relia/library/js/app.js')
    .sass('src/scss/app.scss', 'public/css')

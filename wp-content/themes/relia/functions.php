@@ -16,11 +16,11 @@ if ( ! function_exists( 'relia_setup' ) ) :
  * as indicating support for post thumbnails.
  */
 function relia_setup() {
-    
+
         if( !defined( 'RELIA_VERSION' ) ) :
             define('RELIA_VERSION', '1.1.2');
         endif;
-    
+
 	/*
 	 * Make theme available for translation.
 	 * Translations can be filed in the /languages/ directory.
@@ -75,7 +75,7 @@ function relia_setup() {
 		'quote',
 		'link',
 	) );
-      
+
         add_action( 'after_setup_theme', 'woocommerce_support' );
 
         /**
@@ -87,7 +87,7 @@ function relia_setup() {
         add_theme_support( 'wc-product-gallery-slider' );
         add_editor_style('');
 
-        
+
 }
 endif; // relia_setup
 add_action( 'after_setup_theme', 'relia_setup' );
@@ -152,7 +152,7 @@ add_action('rest_api_init', function () {
 	register_rest_route('contests/v1', '/entries/(?P<entry_id>\d+)', array(
 		'methods' => 'PATCH',
 		'callback' => 'update_entry',
-		'args' => array(			
+		'args' => array(
 			'tier1' => array(
 				'required' => true,
 				'type' => 'string'
@@ -185,15 +185,15 @@ add_action('rest_api_init', function () {
 function handle_get_all($data)
 {
 	global $wpdb;
-	$query = "SELECT * FROM `wp_nkmd6smjga_contests`";
+	$query = "SELECT * FROM `wp_440kyaxs8z_contests`";
 	$list = $wpdb->get_results($query);
 	return $list;
 }
 
 function handle_get_user_entries($data)
 {
-	global $wpdb;	
-	$query = "SELECT * FROM `wp_nkmd6smjga_entries` WHERE user_id = $data[user_id] AND contest_id = $data[contest_id]";
+	global $wpdb;
+	$query = "SELECT * FROM `wp_440kyaxs8z_entries` WHERE user_id = $data[user_id] AND contest_id = $data[contest_id]";
 	$list = $wpdb->get_results($query);
 	return $list;
 }
@@ -211,7 +211,7 @@ function update_entry($data)
 	$tier6 = $params['tier6'];
 
 	$wpdb->update(
-		'wp_nkmd6smjga_entries',
+    'wp_440kyaxs8z_entries',
 		array(
 			'tier1' => $tier1,
 			'tier2' => $tier2,
@@ -221,7 +221,7 @@ function update_entry($data)
 			'tier6' => $tier6
 		),
 		array('entry_id' => $entry_id),
-		array(			
+		array(
 			'%s',
 			'%s',
 			'%s',
