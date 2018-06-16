@@ -3,6 +3,7 @@
 		<section class="gc-tabs-user-entries">
 			<p v-if="userId === 0">You must be logged in to see this page</p>
 			<div v-if="userEntries && userEntries.length === 1">
+        <!-- <p>Submissions for The US Open Championship are now closed! Good luck!</p> -->
 				<p v-if="saved"><strong>Entry Saved!</strong></p>
 				<div class="gc-tabs-user-info" v-if="currentContest"><p>Please edit or submit for The Grand Slam Challenge - {{ currentContest.name }}</p><a :href="worksheet_link" target="_blank">Worksheet</a></div>
 			</div>
@@ -14,7 +15,8 @@
 					<option v-for="entry in userEntries" v-if="entry.contest_id == currentContest.id" :value="entry" :key="entry.id">{{ entry.name }}</option>
 				</select>
 			</div>
-			<div v-if="userId != 0 && userEntries && userEntries.length == 0">Sorry, registration for this contest is closed! Check back next year</div>
+      <div v-if="userId != 0 && userEntries && userEntries.length == 0">Sorry, registration for this contest is closed! Check back next year</div>
+			<!-- <div v-if="userId != 0 && userEntries && userEntries.length == 0">Sorry, registration for this contest is closed! Check back next year</div> -->
 		</section>
 		<section class="gc-tabs" v-if="editingEntry">
 			<div class="gc-tabs-content">
@@ -255,14 +257,16 @@ export default {
 		},
 
 		setCurrentContest(upcoming) {
-			let sorted = _.orderBy(upcoming, 'close', 'asc');
-			this.currentContest = sorted[0];
+      let sorted = _.orderBy(upcoming, 'close', 'asc');
+      console.log(sorted);
+			this.currentContest = upcoming[0];
 			this.getUserEntries();
 		},
 
 		getUserEntries() {
 			// if (this.userId.length) {
-				axios.get(`https://gupscorner.com/wp-json/contests/v1/contest/${this.currentContest.id}/users/${this.userId}`)
+        axios.get(`https://gupscorner.com/wp-json/contests/v1/contest/3/users/${this.userId}`)
+				// axios.get(`https://gupscorner.com/wp-json/contests/v1/contest/${this.currentContest.id}/users/${this.userId}`)
 					.then(r => {
 						this.userEntries = r.data;
 					})

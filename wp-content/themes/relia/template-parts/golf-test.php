@@ -1,5 +1,6 @@
 
 
-<div id="app">
+<!-- <div id="app">
 	<app></app>
-</div>
+</div> -->
+<p>Submissions for The US Open Championship are now closed! Good luck!</p>
